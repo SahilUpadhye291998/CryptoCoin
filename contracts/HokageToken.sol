@@ -2,17 +2,17 @@ pragma solidity ^0.5.8;
 
 contract HokageToken{
     //name
-    string public constant name = 'HokageToken';
+    string public constant tokenName = 'HokageToken';
     //symbol
-    string public constant symbol = 'Hokage';
+    string public constant tokenSymbol = 'Hokage';
     //decimal
-    uint8 public constant decimal = 18;
+    uint8 public constant tokenDecimal = 18;
     //standered < not erc20 token
-    string public constant standered = 'HokageToken v1.0';
+    string public constant tokenStandered = 'HokageToken v1.0';
     //total supply of the coin
     uint256 public totalSupply;
     //balance of mapping
-    mapping(address => uint256) public balanceOf;
+    mapping(address => uint256) public balances;
     //allowance
     mapping(address => mapping(address => uint256)) private allowed;
 
@@ -20,18 +20,18 @@ contract HokageToken{
     constructor (uint256 _initialSupply) public{
         totalSupply = _initialSupply;
         //allocating the balance to admin account
-        balanceOf[msg.sender] = _initialSupply;
+        balances[msg.sender] = _initialSupply;
     }
 
     //transfer function
     function transfer(address _to, uint256 _value) public returns (bool success){
 
         //Exection if not sufficauebt balance
-        require(balanceOf[msg.sender] >= _value,'You dont have enogh tokens');
+        require(balances[msg.sender] >= _value,'You dont have enogh tokens');
 
         //transfer
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
+        balances[msg.sender] -= _value;
+        balances[_to] += _value;
 
         //Transfer Event
         emit Transfer(msg.sender,_to,_value);
@@ -52,12 +52,12 @@ contract HokageToken{
     //transfer from
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success){
         //require _from has enough token
-        require(_value <= balanceOf[_from],'Cant transfer more than the required balance');
+        require(_value <= balances[_from],'Cant transfer more than the required balance');
         require(_value <= allowance(_from, msg.sender), 'Some error has occured');
 
         //change the balance
-        balanceOf[_to] += _value;
-        balanceOf[_from] -= _value;
+        balances[_to] += _value;
+        balances[_from] -= _value;
 
         //update the allowance
         allowed[_from][msg.sender] -= _value;
@@ -100,6 +100,46 @@ contract HokageToken{
         return allowed[_owner][_spender];
     }
 
+    /*
+    * @return : string : name of the token
+    */
+    //name
+    function name() public pure returns (string memory){
+        return tokenName;
+    }
+
+    /*
+    * @return : string : name of the symbol
+    */
+    //symbol
+    function symbol() public pure returns (string memory){
+        return tokenSymbol;
+    }
+
+    /*
+    * @return : unint8 : number of decimal places
+    */
+    //decimal
+    function decimal() public pure returns (uint8){
+        return tokenDecimal;
+    }
+
+    /*
+    * @return : string : version of the contract
+    */
+    //standered
+    function standered() public pure returns (string memory){
+        return tokenStandered;
+    }
+
+    /*
+    * @param _owner : owner from whose account coin/token is requested
+    * @return : unint256 : number of token being given to the owner
+    */
+    //balanceOf
+    function balanceOf(address _owner) public view returns (uint256 balance) {
+        return balances[_owner];
+    }
 
     //EVENTS
     event Transfer(
